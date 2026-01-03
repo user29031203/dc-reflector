@@ -46,7 +46,7 @@ LOG_REACTIONS = True
 
 ## Note/Extra
 
-If you won't plan to reuse it again for the same channel, **cleaning [forwarded messages database](forwarded_mapping.json) is recommended after end of usage** since it will never be cleaned automatically. 
+If you won't plan to reuse it again for the same channel, **cleaning [forwarded messages database](forwarded_mapping.json) is recommended after end of usage** since it will never be cleaned automatically. You should keep json brackets.
 
 ----
 ## ⛔️ DO NOT SHARE YOUR AUTH TOKEN! ⛔️ ##
