@@ -10,7 +10,7 @@ Dc-Reflector is a Python program to forward/copy messages of a channel to anothe
 
 <!-- legal warning/info -->
 > ⚠️ **Any tool that automates actions on user accounts, including this one, could result in account termination.** (see [self-bots][self-bots]).  
-> Use at your own risk! ([discussion](https://github.com/victornpb/undiscord/discussions/273)).
+> Use at your own risk! 
 <!-- end legal warning/info -->
 
 ## How does it work?
@@ -72,3 +72,4 @@ Using third-party scripts means you trust that the script’s developer hasn’t
 
 <!-- links/refs -->
 [discord.py-self]: https://pypi.org/project/discord.py-self/
+[self-bots]: https://support.discordapp.com/hc/en-us/articles/115002192352-Automated-user-accounts-self-bots-
