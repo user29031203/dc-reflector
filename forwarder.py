@@ -86,21 +86,50 @@ async def handle_reaction(payload, add=True):
 
     try:
         msg = await dest.fetch_message(fwd_id)
-
         emoji = payload.emoji
-        emoji_str = f"<{'' if not emoji.animated else 'a'}:{emoji.name}:{emoji.id}>" \
-                    if emoji.is_custom_emoji() else emoji.name
 
-        if add:
-            await msg.add_reaction(emoji_str)
+        # ========== STANDARD UNICODE EMOJI ==========
+        if not emoji.is_custom_emoji():
+            if add:
+                await msg.add_reaction(emoji.name)
+            else:
+                await msg.remove_reaction(emoji.name, client.user)
+            return
+
+        # ========== CUSTOM EMOJI ==========
+        # Check if destination is a guild channel
+        if hasattr(dest, "guild") and dest.guild is not None:
+            supported = any(e.id == emoji.id for e in dest.guild.emojis)
         else:
-            await msg.remove_reaction(emoji_str, client.user)
+            supported = False
+        
+        if supported:
+            print("Emoji avaible on dest place too!")
+            emoji_str = f"<{'a' if emoji.animated else ''}:{emoji.name}:{emoji.id}>"
+            if add:
+                await msg.add_reaction(emoji_str)
+            else:
+                await msg.remove_reaction(emoji_str, client.user)
+            return
 
-        if LOG_REACTIONS:
-            action = "Added" if add else "Removed"
-            print(f"{action} reaction {emoji_str} → {fwd_id}")
+        # ========== UNSUPPORTED CUSTOM EMOJI ==========
+        if add:
+            print("Text sending as emoji to represent!")
+            tag = f"*[reaction: {emoji.name}]*"
+            if emoji.animated:
+                tag = f"*[reaction: a:{emoji.name}]*"
+
+            if tag not in msg.content:
+                await msg.edit(content=msg.content + "\n" + tag)
+
+        # Reaction removal is ignored for text fallback (intentional)
 
     except discord.NotFound:
+        print(f"Forwarded message missing: {fwd_id}")
+    except discord.HTTPException as e:
+        if getattr(e, "code", None) != 10014:
+            print(f"Reaction error: {e}")
+
         print(f"Forwarded message missing: {fwd_id}")
     except Exception as e:
         print(f"Reaction error: {e}")
