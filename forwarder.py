@@ -3,6 +3,7 @@ import discord
 import json
 import os
 import signal
+import asyncio 
 from config import (
     USER_TOKEN,
     SOURCE_CHANNEL_ID,
@@ -30,7 +31,33 @@ async def on_ready():
     print(f"Source → {SOURCE_CHANNEL_ID}")
     print(f"Destination → {DESTINATION_CHANNEL_ID}")
     print(f"Tracking {len(forwarded_messages)} messages\n")
+    client.loop.create_task(send_periodic_dot())
+    
+    
+async def send_periodic_dot():
+    await client.wait_until_ready()
+    dot_msg = None
+    while not client.is_closed():
+        await asyncio.sleep(1 * 60 * 60)  # periodic interval
+        try:
+            dest = client.get_channel(SOURCE_CHANNEL_ID)
+            if not dest:
+                continue
 
+            # Delete the previous dot message if it exists
+            if dot_msg:
+                try:
+                    await dot_msg.delete()
+                except discord.NotFound:
+                    pass  # already gone, no problem
+
+            dot_msg = await dest.send(".")
+            print("Sent periodic '.' message")
+
+        except Exception as e:
+            print(f"Periodic dot error: {e}")
+            
+            
 @client.event
 async def on_message(message):
     if message.channel.id != SOURCE_CHANNEL_ID:
